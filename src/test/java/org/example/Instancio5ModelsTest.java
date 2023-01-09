@@ -23,22 +23,22 @@ class Instancio5ModelsTest {
     // Objects created from Models can be customised further or even turned into other models.
     private static Model<Person> simpsonsModel() {
         return Instancio.of(Person.class)
-                .set(field(Address.class, "city"), "Springfield")
-                .set(field(Address.class, "country"), "US")
-                .set(field(Phone.class, "countryCode"), "+1")
-                .generate(field(Phone.class, "number"), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
+                .set(field(Address::getCity), "Springfield")
+                .set(field(Address::getCountry), "US")
+                .set(field(Phone::getCountryCode), "+1")
+                .generate(field(Phone::getNumber), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
                 .toModel();
     }
 
     @Test
     void createSimpsonsFromModel() {
         Person homer = Instancio.of(simpsonsModel())
-                .set(field(Person.class, "name"), "Homer")
+                .set(field(Person::getName), "Homer")
                 .set(all(Gender.class), Gender.MALE)
                 .create();
 
         Person marge = Instancio.of(simpsonsModel())
-                .set(field(Person.class, "name"), "Marge")
+                .set(field(Person::getName), "Marge")
                 .set(all(Gender.class), Gender.FEMALE)
                 .create();
 

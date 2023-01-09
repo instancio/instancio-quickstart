@@ -40,7 +40,7 @@ class Instancio6CustomGeneratorTest {
     void usingCustomGenerator() {
         Person person = Instancio.of(Person.class)
                 .supply(all(Address.class), ADDRESS_GENERATOR)
-                .generate(field(Address.class, "phoneNumbers"), gen -> gen.collection().size(PHONES_SIZE))
+                .generate(field(Address::getPhoneNumbers), gen -> gen.collection().size(PHONES_SIZE))
                 .create();
 
         Address address = person.getAddress();

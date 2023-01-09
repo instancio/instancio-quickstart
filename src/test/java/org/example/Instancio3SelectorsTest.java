@@ -4,6 +4,7 @@ import org.example.person.Address;
 import org.example.person.Person;
 import org.example.person.Phone;
 import org.instancio.Instancio;
+import org.instancio.Scope;
 import org.instancio.SelectorGroup;
 import org.instancio.TypeToken;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,17 @@ class Instancio3SelectorsTest {
     //
 
     @Test
-    @DisplayName("Selecting a field of the class being created")
+    @DisplayName("Selecting a field using an accessor method reference")
+    void selectFieldUsingMethodReference() {
+        Person person = Instancio.of(Person.class)
+                .set(field(Person::getName), "Homer")
+                .create();
+
+        assertThat(person.getName()).isEqualTo("Homer");
+    }
+
+    @Test
+    @DisplayName("Selecting a field of the class being created using field name")
     void selectFieldInRootClass() {
         Person person = Instancio.of(Person.class)
                 .set(field("name"), "Homer") // selects Person.name
@@ -52,8 +63,8 @@ class Instancio3SelectorsTest {
     }
 
     @Test
-    @DisplayName("Selecting a field of the specified class")
-    void selectFieldInAnyClass() {
+    @DisplayName("Selecting a field of the specified class using field name")
+    void selectFieldUsingClassAndFieldName() {
         Person person = Instancio.of(Person.class)
                 .set(field(Address.class, "city"), "Springfield")
                 .create();
@@ -134,8 +145,8 @@ class Instancio3SelectorsTest {
     @Test
     void selectorGroup() {
         final SelectorGroup genderAndId = all(
-                field(Person.class, "id"),
-                field(Person.class, "gender"));
+                field(Person::getId),
+                field(Person::getGender));
 
         Person person = Instancio.of(Person.class)
                 .ignore(genderAndId)
@@ -167,10 +178,27 @@ class Instancio3SelectorsTest {
     }
 
     @Test
-    @DisplayName("Using scope() to narrow down selector targets")
-    void selectAllStringsInThePhoneClass() {
+    @DisplayName("Using selector 'toScope()' to narrow down selector targets")
+    void selectAllStringsWithinList() {
+        Scope listOfPhones = field(Address::getPhoneNumbers).toScope();
+
         Address address = Instancio.of(Address.class)
-                .set(allStrings().within(scope(Phone.class)), "bar")
+                .set(allStrings().within(listOfPhones), "bar")
+                .create();
+
+        assertThat(address.getPhoneNumbers()).allSatisfy(phone -> {
+            assertThat(phone.getCountryCode()).isEqualTo("bar");
+            assertThat(phone.getNumber()).isEqualTo("bar");
+        });
+    }
+
+    @Test
+    @DisplayName("Using 'Select.scope()' to narrow down selector targets")
+    void selectAllStringsInThePhoneClass() {
+        final Scope phoneClass = scope(Phone.class);
+
+        Address address = Instancio.of(Address.class)
+                .set(allStrings().within(phoneClass), "bar")
                 .create();
 
         assertThat(address.getPhoneNumbers()).allSatisfy(phone -> {

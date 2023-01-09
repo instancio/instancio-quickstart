@@ -68,8 +68,8 @@ class Instancio1BasicsTest {
     @DisplayName("generate() is for customising randomly generated values of string, numbers, dates, etc")
     void customiseObjectUsingGenerate() {
         Phone phone = Instancio.of(Phone.class)
-                .generate(field(Phone.class, "countryCode"), gen -> gen.oneOf("+1", "+44"))
-                .generate(field(Phone.class, "number"), gen -> gen.string().digits().length(7))
+                .generate(field(Phone::getCountryCode), gen -> gen.oneOf("+1", "+44"))
+                .generate(field(Phone::getNumber), gen -> gen.string().digits().length(7))
                 .create();
 
         assertThat(phone.getNumber()).containsOnlyDigits().hasSize(7);
@@ -80,7 +80,7 @@ class Instancio1BasicsTest {
     @DisplayName("set() is for setting non-random (expected) values")
     void customiseObjectUsingSet() {
         Phone phone = Instancio.of(Phone.class)
-                .set(field(Phone.class, "countryCode"), "+1")
+                .set(field(Phone::getCountryCode), "+1")
                 .create();
 
         assertThat(phone.getCountryCode()).isEqualTo("+1");
@@ -119,7 +119,7 @@ class Instancio1BasicsTest {
     @Test
     void usingIgnore() {
         Phone phone = Instancio.of(Phone.class)
-                .ignore(field("number"))
+                .ignore(field(Phone::getNumber))
                 .create();
 
         assertThat(phone.getNumber()).isNull();
@@ -131,7 +131,7 @@ class Instancio1BasicsTest {
 
         for (int i = 0; i < 100; i++) {
             Phone phone = Instancio.of(Phone.class)
-                    .withNullable(field("number")) // approx 1/6 probability of null
+                    .withNullable(field(Phone::getNumber)) // approx 1/6 probability of null
                     .create();
 
             results.add(phone.getNumber());

@@ -74,10 +74,10 @@ class Instancio4CollectionsTest {
     @DisplayName("Collections can be customised using the builder API")
     void ofListWithBuilderAPI() {
         List<Person> persons = Instancio.ofList(Person.class).size(10)
+                .set(field(Person::getName), "Homer Simpson")
+                .generate(field(Person::getAge), gen -> gen.ints().range(40, 50))
                 .withNullable(all(Gender.class))
-                .set(field(Person.class, "name"), "Homer Simpson")
                 .subtype(all(Phone.class), PhoneWithExtension.class)
-                .generate(field(Person.class, "age"), gen -> gen.ints().range(40, 50))
                 .create();
 
         assertThat(persons).allSatisfy(person -> {
