@@ -9,35 +9,37 @@ import org.instancio.Model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.all;
 import static org.instancio.Select.field;
 
 /**
  * Examples of using {@link org.instancio.Model}.
+ * A model is a template for creating objects.
  */
 class Instancio5ModelsTest {
 
-    // A model is a template for creating objects.
-    // Define a model and create objects from it based on the template.
-    // Objects created from Models can be customised further or even turned into other models.
-    private static Model<Person> simpsonsModel() {
-        return Instancio.of(Person.class)
-                .set(field(Address::getCity), "Springfield")
-                .set(field(Address::getCountry), "US")
-                .set(field(Phone::getCountryCode), "+1")
-                .generate(field(Phone::getNumber), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
-                .toModel();
-    }
+    /*
+     Define a model and create objects from it based on the template.
+     Tests create objects based on the model and apply customisations on top of it if needed
+    */
+    private final Model<Person> simpsonsModel = Instancio.of(Person.class)
+            .set(field(Address::getCity), "Springfield")
+            .set(field(Address::getCountry), "US")
+            .set(field(Phone::getCountryCode), "+1")
+            .generate(field(Phone::getNumber), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
+            .toModel();
 
     @Test
     void createSimpsonsFromModel() {
-        Person homer = Instancio.of(simpsonsModel())
+        Person homer = Instancio.of(simpsonsModel)
                 .set(field(Person::getName), "Homer")
                 .set(all(Gender.class), Gender.MALE)
                 .create();
 
-        Person marge = Instancio.of(simpsonsModel())
+        Person marge = Instancio.of(simpsonsModel)
                 .set(field(Person::getName), "Marge")
                 .set(all(Gender.class), Gender.FEMALE)
                 .create();
@@ -49,7 +51,7 @@ class Instancio5ModelsTest {
     @Test
     @DisplayName("Models can be created from other Models")
     void createModelFromModel() {
-        Model<Person> simpsonsKid = Instancio.of(simpsonsModel())
+        Model<Person> simpsonsKid = Instancio.of(simpsonsModel)
                 .generate(field("age"), gen -> gen.ints().range(5, 10))
                 .toModel();
 
@@ -60,6 +62,20 @@ class Instancio5ModelsTest {
 
         assertSimpson(bart, "Bart", Gender.MALE);
         assertThat(bart.getAge()).isBetween(5, 10);
+    }
+
+    @Test
+    void createCollectionFromModel() {
+        final int numberOfFamilyMembers = 5;
+
+        List<Person> simpsons = Instancio.ofList(simpsonsModel)
+                .size(numberOfFamilyMembers)
+                .create();
+
+        assertThat(simpsons)
+                .as("All family members live at the same address")
+                .hasSize(numberOfFamilyMembers)
+                .allSatisfy(simpson -> assertAddress(simpson.getAddress()));
     }
 
     private static void assertSimpson(Person simpson, String name, Gender gender) {
