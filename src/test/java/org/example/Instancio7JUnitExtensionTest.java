@@ -52,8 +52,8 @@ class Instancio7JUnitExtensionTest {
                 .hasSizeGreaterThanOrEqualTo(MIN_COLLECTION_SIZE);
     }
 
+    @InstancioSource
     @ParameterizedTest
-    @InstancioSource({UUID.class, Address.class})
     @DisplayName("Using Instancio to provide any number of parameterized test arguments")
     void parameterizedExample(UUID uuid, Address address) {
         assertThat(uuid).isNotNull();
