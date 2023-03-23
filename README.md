@@ -1,5 +1,5 @@
 # Instancio Quickstart
-
+84;0;0c
 This is a sample project showcasing main features of Instancio.
 The samples are organised by feature across the following files:
 
@@ -10,3 +10,4 @@ The samples are organised by feature across the following files:
 - [`Instancio5ModelsTest`](src/test/java/org/example/Instancio5ModelsTest.java) - creating object templates using `Model`s
 - [`Instancio6CustomGeneratorTest`](src/test/java/org/example/Instancio6CustomGeneratorTest.java) - example of a custom generator
 - [`Instancio7JUnitExtensionTest`](src/test/java/org/example/Instancio7JUnitExtensionTest.java) - example of `InstancioExtension` for JUnit 5
+- [`Instancio8BeanValidationTest`](src/test/java/org/example/InstancioBeanValidationTest.java) - generating objects based on Jakarta/Hibernate validation annotations
