@@ -1,5 +1,5 @@
 # Instancio Quickstart
-84;0;0c
+
 This is a sample project showcasing main features of Instancio.
 The samples are organised by feature across the following files:
 
