@@ -46,7 +46,7 @@ class Instancio1BasicsTest {
     }
 
     @Test
-    @DisplayName("Create a fully-populate object")
+    @DisplayName("Create a fully-populated object")
     void fullyPopulateObject() {
         Phone phone = Instancio.create(Phone.class);
 
