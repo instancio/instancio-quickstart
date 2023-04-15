@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>8</java.version>
-        <instancio.version>2.13.0</instancio.version>
+        <instancio.version>2.14.0</instancio.version>
         <assertj.version>3.24.2</assertj.version>
         <junit.version>5.9.2</junit.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
@@ -44,23 +44,24 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Optional dependencies for Bean Validation -->
+        <!-- Optional dependencies for Bean Validation.
+             Using an older version of the validator compatible with Java 8 -->
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>3.0.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>8.0.0.Final</version>
+            <version>5.1.2.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jasper</groupId>
             <artifactId>apache-el</artifactId>
-            <version>10.1.5</version>
+            <version>9.0.52</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,18 +1,10 @@
 package org.example;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
-import org.hibernate.validator.constraints.UUID;
 import org.instancio.Instancio;
 import org.instancio.junit.InstancioExtension;
 import org.instancio.junit.WithSettings;
@@ -21,12 +13,17 @@ import org.instancio.settings.Settings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.Instant;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.all;
+import static org.instancio.Select.field;
 
 /**
  * Example of using Bean Validation to produce valid objects.
@@ -50,11 +47,9 @@ class Instancio8BeanValidationTest {
             .set(Keys.BEAN_VALIDATION_ENABLED, true);
 
     private static class Student {
-        @UUID
-        private String id;
 
         @Digits(integer = 10, fraction = 0)
-        private String studentId;
+        String studentId;
 
         @Length(min = 3, max = 50)
         String name;
@@ -64,9 +59,6 @@ class Instancio8BeanValidationTest {
 
         @Range(min = 18, max = 29)
         int age;
-
-        @Past
-        Instant lastModified;
 
         @Size(min = 1, max = 10)
         List<String> hobbies;
@@ -83,7 +75,6 @@ class Instancio8BeanValidationTest {
     @Test
     void createValidObject() {
         Student result = Instancio.create(Student.class);
-
         assertThat(getValidationErrors(result)).isEmpty();
     }
 
@@ -93,20 +84,24 @@ class Instancio8BeanValidationTest {
      */
     @Test
     void validationError() {
+        // Student must be between 18-29 years of age, inclusive.
+        // Verify under/over the age requirements
         Student result = Instancio.of(Student.class)
-                .generate(all(Instant.class), gen -> gen.temporal().instant().future())
+                .generate(field(Student.class, "age"), gen -> gen.ints()
+                        .range(0, 17)  // below 18
+                        .range(30, 99) // over 29
+                )
                 .create();
 
         assertThat(getValidationErrors(result))
                 .hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
-                .containsOnly("must be a past date");
+                .containsOnly("must be between 18 and 29");
     }
 
     private static <T> Set<ConstraintViolation<T>> getValidationErrors(T obj) {
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            Validator validator = factory.getValidator();
-            return validator.validate(obj);
-        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        return validator.validate(obj);
     }
 }
