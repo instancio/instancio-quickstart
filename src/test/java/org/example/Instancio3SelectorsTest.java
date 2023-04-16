@@ -1,8 +1,10 @@
 package org.example;
 
+import org.example.cyclic.Node;
 import org.example.person.Address;
 import org.example.person.Person;
 import org.example.person.Phone;
+import org.instancio.GetMethodSelector;
 import org.instancio.Instancio;
 import org.instancio.Scope;
 import org.instancio.SelectorGroup;
@@ -34,6 +36,7 @@ import static org.instancio.Select.types;
  *   <li>all(...) - selector groups</li>
  *   <li>root() - selecting the root object</li>
  *   <li>within() and scope() - to narrow down selector targets</li>
+ *   <li>atDepth() - to narrow down selector targets by depth</li>
  * </ul>
  */
 class Instancio3SelectorsTest {
@@ -177,6 +180,10 @@ class Instancio3SelectorsTest {
 
     }
 
+    //
+    // Selector within() scope
+    //
+
     @Test
     @DisplayName("Using selector 'toScope()' to narrow down selector targets")
     void selectAllStringsWithinList() {
@@ -205,5 +212,38 @@ class Instancio3SelectorsTest {
             assertThat(phone.getCountryCode()).isEqualTo("bar");
             assertThat(phone.getNumber()).isEqualTo("bar");
         });
+    }
+
+    //
+    // Selector atDepth()
+    //
+    // Note:
+    // - root object is at depth 0
+    // - root object's fields are at depth 1
+    // - etc
+
+    @Test
+    @DisplayName("Set values based on depth")
+    void setValueAtDepth() {
+        final GetMethodSelector<Node<String>, String> getValue = Node::getValue;
+
+        final Node<String> root = Instancio.of(new TypeToken<Node<String>>() {})
+                .set(field(getValue).atDepth(1), "foo")
+                .set(field(getValue).atDepth(2), "bar")
+                .create();
+
+        assertThat(root.getValue()).isEqualTo("foo");
+        assertThat(root.getNext().getValue()).isEqualTo("bar");
+    }
+
+    @Test
+    @DisplayName("Ignore Nodes with depth greater than certain value")
+    void ignoreChildNodes() {
+        final Node<String> root = Instancio.of(new TypeToken<Node<String>>() {})
+                .ignore(types().of(Node.class).atDepth(depth -> depth > 0))
+                .create();
+
+        assertThat(root.getValue()).isNotBlank();
+        assertThat(root.getNext()).isNull();
     }
 }

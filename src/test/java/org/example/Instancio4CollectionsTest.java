@@ -175,4 +175,27 @@ class Instancio4CollectionsTest {
                 .containsNull()
                 .contains(expectedPhone1, expectedPhone2);
     }
+
+    //
+    // Using emit() to set expected values for a certain field
+    //
+
+    @Test
+    @DisplayName("Create 10 persons with expected countries")
+    void usingEmit() {
+        final int numberOfPeople = 10;
+        List<Person> persons = Instancio.ofList(Person.class)
+                .size(numberOfPeople)
+                .generate(field(Address::getCountry), gen -> gen.emit()
+                        .item("Sweden", 2)
+                        .item("Denmark", 2)
+                        .items("Poland", "Italy", "Germany", "Spain", "Romania", "Netherlands"))
+                .create();
+
+        assertThat(persons)
+                .extracting(Person::getAddress)
+                .extracting(Address::getCountry)
+                .containsExactly("Sweden", "Sweden", "Denmark", "Denmark",
+                        "Poland", "Italy", "Germany", "Spain", "Romania", "Netherlands");
+    }
 }
