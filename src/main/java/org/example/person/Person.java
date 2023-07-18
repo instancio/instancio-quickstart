@@ -3,7 +3,6 @@ package org.example.person;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,6 +13,7 @@ public class Person {
     private Gender gender;
     private int age;
     private Address address;
+    private LocalDateTime createdOn;
     private LocalDateTime lastModified = LocalDateTime.now(); // default value
 
     public UUID getId() {
@@ -46,6 +46,14 @@ public class Person {
 
     public void setAge(final int age) {
         this.age = age;
+    }
+
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(final LocalDateTime createdOn) {
+        this.createdOn = createdOn;
     }
 
     public LocalDateTime getLastModified() {

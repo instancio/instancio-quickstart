@@ -5,8 +5,11 @@ import org.example.person.Gender;
 import org.example.person.Person;
 import org.example.person.Phone;
 import org.example.person.PhoneWithExtension;
+import org.instancio.Assign;
+import org.instancio.Assignment;
 import org.instancio.Instancio;
 import org.instancio.Result;
+import org.instancio.When;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +32,7 @@ import static org.instancio.Select.field;
  *   <li>using subtype() to specify a subclass</li>
  *   <li>using ignore() to ignore fields/classes</li>
  *   <li>using withNullable() to allow null values to be generated</li>
+ *   <li>using assign() to set values based on another generated value</li>
  * </ul>
  */
 class Instancio1BasicsTest {
@@ -138,5 +142,37 @@ class Instancio1BasicsTest {
         }
 
         assertThat(results).containsNull();
+    }
+
+    @Test
+    @DisplayName("assign() value conditionally")
+    void assignConditional() {
+        // Set Person.name based on the generated value of Person.gender
+        Assignment assignment = Assign.given(field(Person::getGender), field(Person::getName))
+                .set(When.is(Gender.FEMALE), "Alice")
+                .set(When.is(Gender.MALE), "Bob")
+                .elseSet("Max");
+
+        Person person = Instancio.of(Person.class)
+                .assign(assignment)
+                .create();
+
+        if (person.getGender() == Gender.FEMALE) {
+            assertThat(person.getName()).isEqualTo("Alice");
+        } else if (person.getGender() == Gender.MALE) {
+            assertThat(person.getName()).isEqualTo("Bob");
+        } else {
+            assertThat(person.getName()).isEqualTo("Max");
+        }
+    }
+
+    @Test
+    @DisplayName("assign() value of one field to another field")
+    void copyFieldValue() {
+        Person person = Instancio.of(Person.class)
+                .assign(Assign.valueOf(Person::getCreatedOn).to(Person::getLastModified))
+                .create();
+
+        assertThat(person.getLastModified()).isNotNull().isEqualTo(person.getCreatedOn());
     }
 }
