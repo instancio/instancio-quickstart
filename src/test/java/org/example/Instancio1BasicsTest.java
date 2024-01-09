@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.generics.Pair;
 import org.example.person.Address;
 import org.example.person.Gender;
 import org.example.person.Person;
@@ -14,7 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,14 +28,15 @@ import static org.instancio.Select.field;
  * This class demonstrates basic usage of the API:
  *
  * <ul>
- *   <li>using create() to create objects</li>
- *   <li>using asResult() to get seed value</li>
- *   <li>using set() and generate() to customise objects</li>
- *   <li>using onComplete() callbacks</li>
- *   <li>using subtype() to specify a subclass</li>
- *   <li>using ignore() to ignore fields/classes</li>
- *   <li>using withNullable() to allow null values to be generated</li>
- *   <li>using assign() to set values based on another generated value</li>
+ *   <li>create() to create objects</li>
+ *   <li>asResult() to get seed value</li>
+ *   <li>set() and generate() to customise objects</li>
+ *   <li>onComplete() callbacks</li>
+ *   <li>subtype() to specify a subclass</li>
+ *   <li>ignore() to ignore fields/classes</li>
+ *   <li>withNullable() to allow null values to be generated</li>
+ *   <li>assign() to set values based on another generated value</li>
+ *   <li>cartesianProduct() to generate the Cartesian product for given values</li>
  * </ul>
  */
 class Instancio1BasicsTest {
@@ -174,5 +178,26 @@ class Instancio1BasicsTest {
                 .create();
 
         assertThat(person.getLastModified()).isNotNull().isEqualTo(person.getCreatedOn());
+    }
+
+    @Test
+    void cartesianProduct() {
+        List<Person> persons = Instancio.ofCartesianProduct(Person.class)
+                .with(field(Person::getGender), Gender.MALE, Gender.FEMALE)
+                .with(field(Person::getAge), 30, 31, 32)
+                .list();
+
+        List<Pair<Gender, Integer>> expected = Arrays.asList(
+                Pair.of(Gender.MALE, 30),
+                Pair.of(Gender.MALE, 31),
+                Pair.of(Gender.MALE, 32),
+                Pair.of(Gender.FEMALE, 30),
+                Pair.of(Gender.FEMALE, 31),
+                Pair.of(Gender.FEMALE, 32));
+
+        for (int i = 0; i < expected.size(); i++) {
+            assertThat(persons.get(i).getGender()).isEqualTo(expected.get(i).getLeft());
+            assertThat(persons.get(i).getAge()).isEqualTo(expected.get(i).getRight());
+        }
     }
 }
