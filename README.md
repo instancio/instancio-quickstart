@@ -11,3 +11,4 @@ The samples are organised by feature across the following files:
 - [`Instancio6CustomGeneratorTest`](src/test/java/org/example/Instancio6CustomGeneratorTest.java) - example of a custom generator
 - [`Instancio7JUnitExtensionTest`](src/test/java/org/example/Instancio7JUnitExtensionTest.java) - example of `InstancioExtension` for JUnit 5
 - [`Instancio8BeanValidationTest`](src/test/java/org/example/Instancio8BeanValidationTest.java) - generating objects based on Jakarta/Hibernate validation annotations
+- [`Instancio9MethodAssignmentTest`](src/test/java/org/example/Instancio9MethodAssignmentTest.java) - populating object via setters
