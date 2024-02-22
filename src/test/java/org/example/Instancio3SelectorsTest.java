@@ -142,7 +142,7 @@ class Instancio3SelectorsTest {
     }
 
     //
-    // Selector groups; only regular (non-predicate) selectors can be grouped
+    // Selector groups
     //
 
     @Test
