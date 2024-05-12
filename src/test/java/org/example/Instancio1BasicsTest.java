@@ -22,6 +22,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.all;
+import static org.instancio.Select.allStrings;
 import static org.instancio.Select.field;
 
 /**
@@ -37,6 +38,7 @@ import static org.instancio.Select.field;
  *   <li>withNullable() to allow null values to be generated</li>
  *   <li>assign() to set values based on another generated value</li>
  *   <li>cartesianProduct() to generate the Cartesian product for given values</li>
+ *   <li>filter() to filter generated values</li>
  * </ul>
  */
 class Instancio1BasicsTest {
@@ -199,5 +201,18 @@ class Instancio1BasicsTest {
             assertThat(persons.get(i).getGender()).isEqualTo(expected.get(i).getLeft());
             assertThat(persons.get(i).getAge()).isEqualTo(expected.get(i).getRight());
         }
+    }
+
+    @Test
+    @DisplayName("Using filter to ensure that all generated strings are unique")
+    void filter() {
+        Set<Object> generatedValues = new HashSet<>();
+
+        List<Person> results = Instancio.ofList(Person.class)
+                .size(100)
+                .filter(allStrings(), generatedValues::add)
+                .create();
+
+        assertThat(results).extracting(Person::getName).doesNotHaveDuplicates();
     }
 }
