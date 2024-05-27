@@ -22,7 +22,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.all;
-import static org.instancio.Select.allStrings;
 import static org.instancio.Select.field;
 
 /**
@@ -39,6 +38,7 @@ import static org.instancio.Select.field;
  *   <li>assign() to set values based on another generated value</li>
  *   <li>cartesianProduct() to generate the Cartesian product for given values</li>
  *   <li>filter() to filter generated values</li>
+ *   <li>setBlank() to generate blank POJOs with null fields</li>
  * </ul>
  */
 class Instancio1BasicsTest {
@@ -125,8 +125,8 @@ class Instancio1BasicsTest {
                 });
     }
 
-
     @Test
+    @DisplayName("Exclude fields from being populated using ignore()")
     void usingIgnore() {
         Phone phone = Instancio.of(Phone.class)
                 .ignore(field(Phone::getNumber))
@@ -136,6 +136,7 @@ class Instancio1BasicsTest {
     }
 
     @Test
+    @DisplayName("Allow null values to be generated for specified fields")
     void withNullable() {
         Set<String> results = new HashSet<>();
 
@@ -204,15 +205,31 @@ class Instancio1BasicsTest {
     }
 
     @Test
-    @DisplayName("Using filter to ensure that all generated strings are unique")
+    @DisplayName("Using filter to generate unique values")
     void filter() {
-        Set<Object> generatedValues = new HashSet<>();
+        Set<String> generatedNames = new HashSet<>();
 
         List<Person> results = Instancio.ofList(Person.class)
                 .size(100)
-                .filter(allStrings(), generatedValues::add)
+                .filter(field(Person::getName), generatedNames::add)
                 .create();
 
         assertThat(results).extracting(Person::getName).doesNotHaveDuplicates();
+    }
+
+    @Test
+    @DisplayName("Generate a blank POJO with null fields")
+    void setBlank() {
+        Person personWithBlankAddress = Instancio.of(Person.class)
+                .setBlank(field(Person::getAddress))
+                .create();
+
+        Address address = personWithBlankAddress.getAddress();
+
+        assertThat(address).isNotNull();
+        assertThat(address.getStreet()).isNull();
+        assertThat(address.getCity()).isNull();
+        assertThat(address.getCountry()).isNull();
+        assertThat(address.getPhoneNumbers()).isEmpty(); // blank objects have empty Collections
     }
 }
