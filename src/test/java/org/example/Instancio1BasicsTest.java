@@ -188,7 +188,7 @@ class Instancio1BasicsTest {
         List<Person> persons = Instancio.ofCartesianProduct(Person.class)
                 .with(field(Person::getGender), Gender.MALE, Gender.FEMALE)
                 .with(field(Person::getAge), 30, 31, 32)
-                .list();
+                .create();
 
         List<Pair<Gender, Integer>> expected = Arrays.asList(
                 Pair.of(Gender.MALE, 30),
