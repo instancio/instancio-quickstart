@@ -35,6 +35,7 @@ import static org.instancio.Select.field;
  *   <li>subtype() to specify a subclass</li>
  *   <li>ignore() to ignore fields/classes</li>
  *   <li>withNullable() to allow null values to be generated</li>
+ *   <li>withUnique() for generating unique vaalues</li>
  *   <li>assign() to set values based on another generated value</li>
  *   <li>cartesianProduct() to generate the Cartesian product for given values</li>
  *   <li>filter() to filter generated values</li>
@@ -136,7 +137,7 @@ class Instancio1BasicsTest {
     }
 
     @Test
-    @DisplayName("Allow null values to be generated for specified fields")
+    @DisplayName("withNullable() to allow null values to be generated for a given selector")
     void withNullable() {
         Set<String> results = new HashSet<>();
 
@@ -149,6 +150,17 @@ class Instancio1BasicsTest {
         }
 
         assertThat(results).containsNull();
+    }
+
+    @Test
+    @DisplayName("withUnique() for generating unique values for a given selector")
+    void withUnique() {
+        List<Person> results = Instancio.ofList(Person.class)
+                .size(100)
+                .withUnique(field(Person::getName))
+                .create();
+
+        assertThat(results).extracting(Person::getName).doesNotHaveDuplicates();
     }
 
     @Test
@@ -205,16 +217,16 @@ class Instancio1BasicsTest {
     }
 
     @Test
-    @DisplayName("Using filter to generate unique values")
+    @DisplayName("filter() for filtering generated values using a predicate")
     void filter() {
-        Set<String> generatedNames = new HashSet<>();
-
         List<Person> results = Instancio.ofList(Person.class)
                 .size(100)
-                .filter(field(Person::getName), generatedNames::add)
+                .filter(field(Person::getAge), (Integer age) -> age % 2 == 0)
                 .create();
 
-        assertThat(results).extracting(Person::getName).doesNotHaveDuplicates();
+        assertThat(results)
+                .hasSize(100)
+                .allSatisfy(person -> assertThat(person.getAge()).isEven());
     }
 
     @Test
