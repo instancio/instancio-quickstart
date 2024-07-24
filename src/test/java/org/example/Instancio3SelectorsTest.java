@@ -49,20 +49,20 @@ class Instancio3SelectorsTest {
     @DisplayName("Selecting a field using an accessor method reference")
     void selectFieldUsingMethodReference() {
         Person person = Instancio.of(Person.class)
-                .set(field(Person::getName), "Homer")
+                .set(field(Person::getFirstName), "Homer")
                 .create();
 
-        assertThat(person.getName()).isEqualTo("Homer");
+        assertThat(person.getFirstName()).isEqualTo("Homer");
     }
 
     @Test
     @DisplayName("Selecting a field of the class being created using field name")
     void selectFieldInRootClass() {
         Person person = Instancio.of(Person.class)
-                .set(field("name"), "Homer") // selects Person.name
+                .set(field("firstName"), "Homer") // selects Person.name
                 .create();
 
-        assertThat(person.getName()).isEqualTo("Homer");
+        assertThat(person.getFirstName()).isEqualTo("Homer");
     }
 
     @Test

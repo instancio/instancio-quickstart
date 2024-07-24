@@ -4,6 +4,7 @@ import org.example.person.Address;
 import org.example.person.Gender;
 import org.example.person.Person;
 import org.example.person.Phone;
+import org.instancio.Assign;
 import org.instancio.Instancio;
 import org.instancio.Model;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,11 @@ class Instancio5ModelsTest {
      Tests create objects based on the model and apply customisations on top of it if needed
     */
     private final Model<Person> simpsonsModel = Instancio.of(Person.class)
+            .set(field(Person::getLastName), "Simpson")
+            // Create 'fullName' from first and last names
+            .assign(Assign.valueOf(all(Person.class))
+                    .to(field(Person::getFullName))
+                    .as((Person p) -> p.getFirstName() + " " + p.getLastName()))
             .set(field(Address::getCity), "Springfield")
             .set(field(Address::getCountry), "US")
             .set(field(Phone::getCountryCode), "+1")
@@ -35,17 +41,21 @@ class Instancio5ModelsTest {
     @Test
     void createSimpsonsFromModel() {
         Person homer = Instancio.of(simpsonsModel)
-                .set(field(Person::getName), "Homer")
+                .set(field(Person::getFirstName), "Homer")
                 .set(all(Gender.class), Gender.MALE)
                 .create();
 
-        Person marge = Instancio.of(simpsonsModel)
-                .set(field(Person::getName), "Marge")
-                .set(all(Gender.class), Gender.FEMALE)
-                .create();
+        assertThat(homer.getFirstName()).isEqualTo("Homer");
+        assertThat(homer.getLastName()).isEqualTo("Simpson");
+        assertThat(homer.getFullName()).isEqualTo("Homer Simpson");
+        assertThat(homer.getGender()).isEqualTo(Gender.MALE);
 
-        assertSimpson(homer, "Homer", Gender.MALE);
-        assertSimpson(marge, "Marge", Gender.FEMALE);
+        Address address = homer.getAddress();
+        assertThat(address.getCity()).isEqualTo("Springfield");
+        assertThat(address.getCountry()).isEqualTo("US");
+        assertThat(address.getPhoneNumbers())
+                .isNotEmpty()
+                .allSatisfy(phone -> assertThat(phone.getCountryCode()).isEqualTo("+1"));
     }
 
     @Test
@@ -56,12 +66,21 @@ class Instancio5ModelsTest {
                 .toModel();
 
         Person bart = Instancio.of(simpsonsKid)
-                .set(field(Person.class, "name"), "Bart")
+                .set(field(Person::getFirstName), "Bart")
                 .set(all(Gender.class), Gender.MALE)
                 .create();
 
-        assertSimpson(bart, "Bart", Gender.MALE);
+        assertThat(bart.getFirstName()).isEqualTo("Bart");
+        assertThat(bart.getFullName()).isEqualTo("Bart Simpson");
+        assertThat(bart.getGender()).isEqualTo(Gender.MALE);
         assertThat(bart.getAge()).isBetween(5, 10);
+
+        Address address = bart.getAddress();
+        assertThat(address.getCity()).isEqualTo("Springfield");
+        assertThat(address.getCountry()).isEqualTo("US");
+        assertThat(address.getPhoneNumbers())
+                .isNotEmpty()
+                .allSatisfy(phone -> assertThat(phone.getCountryCode()).isEqualTo("+1"));
     }
 
     @Test
@@ -75,23 +94,14 @@ class Instancio5ModelsTest {
         assertThat(simpsons)
                 .as("All family members live at the same address")
                 .hasSize(numberOfFamilyMembers)
-                .allSatisfy(simpson -> assertAddress(simpson.getAddress()));
-    }
-
-    private static void assertSimpson(Person simpson, String name, Gender gender) {
-        assertThat(simpson.getName()).isEqualTo(name);
-        assertThat(simpson.getGender()).isEqualTo(gender);
-
-        // Address is based on the model and was not modified
-        assertAddress(simpson.getAddress());
-    }
-
-    private static void assertAddress(Address address) {
-        assertThat(address.getCity()).isEqualTo("Springfield");
-        assertThat(address.getCountry()).isEqualTo("US");
-        assertThat(address.getPhoneNumbers())
-                .isNotEmpty()
-                .allSatisfy(phone -> assertThat(phone.getCountryCode()).isEqualTo("+1"));
+                .allSatisfy(simpson -> {
+                    Address address = simpson.getAddress();
+                    assertThat(address.getCity()).isEqualTo("Springfield");
+                    assertThat(address.getCountry()).isEqualTo("US");
+                    assertThat(address.getPhoneNumbers())
+                            .isNotEmpty()
+                            .allSatisfy(phone -> assertThat(phone.getCountryCode()).isEqualTo("+1"));
+                });
     }
 
 }

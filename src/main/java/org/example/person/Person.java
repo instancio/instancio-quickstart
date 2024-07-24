@@ -9,9 +9,12 @@ import java.util.UUID;
 public class Person {
 
     private UUID id;
-    private String name;
+    private String firstName;
+    private String lastName;
+    private String fullName;
     private Gender gender;
-    private int age;
+    private Integer age;
+    private Boolean isAdult;
     private Address address;
     private LocalDateTime createdOn;
     private LocalDateTime lastModified = LocalDateTime.now(); // default value
@@ -24,12 +27,28 @@ public class Person {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setFirstName(final String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(final String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(final String fullName) {
+        this.fullName = fullName;
     }
 
     public Gender getGender() {
@@ -40,12 +59,20 @@ public class Person {
         this.gender = gender;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(final int age) {
+    public void setAge(final Integer age) {
         this.age = age;
+    }
+
+    public Boolean isAdult() {
+        return isAdult;
+    }
+
+    public void setAdult(final Boolean adult) {
+        isAdult = adult;
     }
 
     public LocalDateTime getCreatedOn() {

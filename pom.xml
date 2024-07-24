@@ -11,9 +11,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>8</java.version>
-        <instancio.version>4.8.0</instancio.version>
-        <assertj.version>3.24.2</assertj.version>
-        <junit.version>5.9.2</junit.version>
+        <instancio.version>5.0.0</instancio.version>
+        <assertj.version>3.26.3</assertj.version>
+        <junit.version>5.10.3</junit.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
     </properties>
 

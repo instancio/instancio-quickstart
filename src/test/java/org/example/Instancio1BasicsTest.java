@@ -103,11 +103,11 @@ class Instancio1BasicsTest {
         Person person = Instancio.of(Person.class)
                 .onComplete(all(Person.class), (Person p) -> {
                     String name = p.getGender() == Gender.FEMALE ? "Marge" : "Homer";
-                    p.setName(name);
+                    p.setFirstName(name);
                 })
                 .create();
 
-        assertThat(person.getName()).isIn("Marge", "Homer");
+        assertThat(person.getFirstName()).isIn("Marge", "Homer");
     }
 
     @Test
@@ -157,17 +157,17 @@ class Instancio1BasicsTest {
     void withUnique() {
         List<Person> results = Instancio.ofList(Person.class)
                 .size(100)
-                .withUnique(field(Person::getName))
+                .withUnique(field(Person::getFirstName))
                 .create();
 
-        assertThat(results).extracting(Person::getName).doesNotHaveDuplicates();
+        assertThat(results).extracting(Person::getFirstName).doesNotHaveDuplicates();
     }
 
     @Test
     @DisplayName("assign() value conditionally")
     void assignConditional() {
         // Set Person.name based on the generated value of Person.gender
-        Assignment assignment = Assign.given(field(Person::getGender), field(Person::getName))
+        Assignment assignment = Assign.given(field(Person::getGender), field(Person::getFirstName))
                 .set(When.is(Gender.FEMALE), "Alice")
                 .set(When.is(Gender.MALE), "Bob")
                 .elseSet("Max");
@@ -177,11 +177,11 @@ class Instancio1BasicsTest {
                 .create();
 
         if (person.getGender() == Gender.FEMALE) {
-            assertThat(person.getName()).isEqualTo("Alice");
+            assertThat(person.getFirstName()).isEqualTo("Alice");
         } else if (person.getGender() == Gender.MALE) {
-            assertThat(person.getName()).isEqualTo("Bob");
+            assertThat(person.getFirstName()).isEqualTo("Bob");
         } else {
-            assertThat(person.getName()).isEqualTo("Max");
+            assertThat(person.getFirstName()).isEqualTo("Max");
         }
     }
 
