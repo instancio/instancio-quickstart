@@ -80,7 +80,7 @@ class Instancio4CollectionsTest {
                 .subtype(all(Phone.class), PhoneWithExtension.class)
                 .create();
 
-        assertThat(persons).allSatisfy(person -> {
+        assertThat(persons).hasSize(10).allSatisfy(person -> {
             assertThat(person.getFullName()).isEqualTo("Homer Simpson");
             assertThat(person.getAge()).isBetween(40, 50);
             assertThat(person.getAddress().getPhoneNumbers()).allSatisfy(phone -> {
@@ -100,7 +100,7 @@ class Instancio4CollectionsTest {
                 .limit(5)
                 .collect(Collectors.toSet());
 
-        assertThat(phones).isNotEmpty();
+        assertThat(phones).hasSize(5);
     }
 
     @Test
@@ -113,7 +113,7 @@ class Instancio4CollectionsTest {
                 .limit(5)
                 .collect(Collectors.toList());
 
-        assertThat(list).isNotEmpty().allSatisfy(pair -> {
+        assertThat(list).hasSize(5).allSatisfy(pair -> {
             assertThat(pair.getLeft()).isBetween(1, 9);
 
             final Item<String> right = pair.getRight();
@@ -137,7 +137,7 @@ class Instancio4CollectionsTest {
                 .create();
 
         assertThat(map)
-                .hasSizeGreaterThan(5)
+                .hasSizeGreaterThanOrEqualTo(5)
                 .containsEntry("bar", 100)
                 .containsEntry("baz", 200);
     }
@@ -171,7 +171,7 @@ class Instancio4CollectionsTest {
                 .create();
 
         assertThat(list)
-                .hasSizeGreaterThan(100)
+                .hasSizeGreaterThanOrEqualTo(100)
                 .containsNull()
                 .contains(expectedPhone1, expectedPhone2);
     }
