@@ -7,7 +7,6 @@ import org.instancio.Result;
 import org.instancio.junit.Given;
 import org.instancio.junit.GivenProvider;
 import org.instancio.junit.InstancioExtension;
-import org.instancio.junit.InstancioSource;
 import org.instancio.junit.Seed;
 import org.instancio.junit.WithSettings;
 import org.instancio.settings.Keys;
@@ -15,11 +14,9 @@ import org.instancio.settings.Settings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.time.LocalDate;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -32,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <ul>
  *   <li>{@code @Seed} annotation</li>
  *   <li>{@code @WithSettings} annotation for injecting {@link Settings}</li>
- *   <li>{@code @InstancioSource} for {@link ParameterizedTest} methods</li>
  *   <li>{@code @Given} annotation for injecting field and method arguments</li>
  *   <li>Reporting seed value when a test fails</li>
  * </ul>
@@ -107,17 +103,6 @@ class Instancio7JUnitExtensionTest {
         assertThat(person.getAddress().getCity()).startsWith("city_");
         assertThat(person.getAddress().getPhoneNumbers())
                 .hasSizeGreaterThanOrEqualTo(MIN_COLLECTION_SIZE);
-    }
-
-    /**
-     * Runs the test 10 times with different arguments.
-     */
-    @InstancioSource(samples = 10)
-    @ParameterizedTest
-    @DisplayName("Using Instancio to provide any number of parameterized test arguments")
-    void parameterizedExample(UUID uuid, Address address) {
-        assertThat(uuid).isNotNull();
-        assertThat(address).isNotNull();
     }
 
     /**
